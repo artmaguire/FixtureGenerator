@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class project {
 
     public static void main(String[] args) {
-        String userInput, selection;
+        /*String userInput, selection;
         int numberOfTeams, totalNumberOfRounds, numberOfMatchesPerRound, roundNumber, matchNumber, homeTeamNumber, awayTeamNumber;
         String[][] fixtures = new String[0][0];
         userInput = JOptionPane.showInputDialog(null, "How many teams would you like in your league?");
@@ -30,8 +30,8 @@ public class project {
 
             Administrator a1 = new Administrator(adminName, adminPassword);
             administrators.add(a1);
-            a1.setName(adminName);
-            a1.setPassword(adminPassword);
+            *//*a1.setName(adminName);
+            a1.setPassword(adminPassword);*//*
 
             String leagueName, leagueIDString;
             int leagueID;
@@ -82,5 +82,6 @@ public class project {
             }
         }
         return userInput;
+    }*/
     }
 }    
