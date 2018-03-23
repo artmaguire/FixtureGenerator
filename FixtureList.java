@@ -1,4 +1,4 @@
-package Project1.FixtureGenerator;
+package Project1;
 
 import java.util.*;
 
@@ -53,50 +53,51 @@ public class FixtureList {
         } else if (!(requestTeam == 1)) {
             System.out.println(errorMessage2 + "either the number 1 or the number 2.");
         }
-            boolean exit = false;
 
-            switch (teamsAdded) {
-                case 0:
-                    exit = true;
-                    break;
-                case 1:
-                    System.out.println("Please enter the number of teams you would like to add.");
-                    teamsAdded = Integer.parseInt(input.nextLine());
-                    break;
-                case 2:
-                    System.out.println("No teams will be added to the league.");
-                    break;
-            }
+        boolean exit = false;
 
-            /*if (!(teamsAdded.matches(pattern))) {
-                System.out.println(errorMessage2 + "a value between 2 and 99.");
-            } */
-            if (teamAmount % 2 == 1) {
-                teamAmount++;
-                additionalTeam = true;
-            }
+        switch (requestTeam) {
+            case 0:
+                exit = true;
+                return;
+            case 1:
+                System.out.println("Please enter the number of teams you would like to add.");
+                teamAmount = Integer.parseInt(input.nextLine());
+                break;
+            case 2:
+                System.out.println("No teams will be added to the league.");
+                return;
+        }
 
-            roundAmount = teamAmount - 1;
-            matchesPerRound = teamAmount / 2;
+        /*if (!(teamsAdded.matches(pattern))) {
+            System.out.println(errorMessage2 + "a value between 2 and 99.");
+        } */
+        if (teamAmount % 2 == 1) {
+            teamAmount++;
+            additionalTeam = true;
+        }
 
-            fixtures = new String[roundAmount][matchesPerRound];
-            for (roundNumber = 0; roundNumber < roundAmount; roundNumber++) {
-                for (matchNumber = 0; matchNumber < matchesPerRound; matchNumber++) {
-                    homeTeamNumber = (roundNumber + matchNumber) % (teamAmount - 1);
-                    awayTeamNumber = (teamAmount - 1 - matchNumber + roundNumber) % (teamAmount - 1);
+        roundAmount = teamAmount - 1;
+        matchesPerRound = teamAmount / 2;
 
-                    if (matchNumber == 0) {
-                        awayTeamNumber = teamAmount - 1;
-                    }
+        fixtures = new String[roundAmount * 2][matchesPerRound]; //double roundAmount for the mirror fixtures
+        for (roundNumber = 0; roundNumber < roundAmount; roundNumber++) {
+            for (matchNumber = 0; matchNumber < matchesPerRound; matchNumber++) {
+                homeTeamNumber = (roundNumber + matchNumber) % (teamAmount - 1);
+                awayTeamNumber = (teamAmount - 1 - matchNumber + roundNumber) % (teamAmount - 1);
 
-                    fixtures[roundNumber][roundAmount] = (homeTeamNumber + 1) + " v " + (awayTeamNumber + 1);
+                if (matchNumber == 0) {
+                    awayTeamNumber = teamAmount - 1;
                 }
-            }
 
-        revisedFixtures = new String[roundAmount][matchesPerRound];
+                fixtures[roundNumber][matchNumber] = (homeTeamNumber + 1) + " v " + (awayTeamNumber + 1);
+            }
+        }
+
+        /*revisedFixtures = new String[roundAmount][matchesPerRound];
         even = 0;
         odd = teamAmount / 2;
-        for (roundNumber = 0; roundNumber < fixtures.length; roundAmount++) {
+        for (roundNumber = 0; roundNumber < roundAmount; roundNumber++) {
             if (roundNumber % 2 == 1) {
                 revisedFixtures[roundNumber] = fixtures[even++];
             } else {
@@ -104,25 +105,26 @@ public class FixtureList {
             }
         }
 
-        fixtures = revisedFixtures;
-        for (roundNumber = 0; roundNumber < fixtures.length; roundNumber++) {
-            if (roundNumber % 2 == 1) {
-                fixtureAsText = fixtures[roundNumber][0];
-                elementsOfFixture = fixtureAsText.split(" v ");
-                fixtures[roundNumber][0] = elementsOfFixture[roundNumber] + " v " + elementsOfFixture[0];
-            }
-        }
+        fixtures = revisedFixtures;*/
 
         for (roundNumber = 0; roundNumber < roundAmount; roundNumber++) {
-            System.out.println("\tMatch " + (matchNumber + 1) + ": " + fixtures[roundNumber][matchNumber] + "\t");
+            //if (roundNumber % 2 == 1) {
+            for (matchNumber = 0; matchNumber < matchesPerRound; matchNumber++) {
+                fixtureAsText = fixtures[roundNumber][matchNumber];
+                elementsOfFixture = fixtureAsText.split(" v ");
+                fixtures[roundNumber + roundAmount][matchNumber] = elementsOfFixture[1] + " v " + elementsOfFixture[0];
+            }
+            //}
+        }
 
-            for (matchNumber = 0; matchNumber < roundAmount; matchNumber++) {
+        for (roundNumber = 0; roundNumber < fixtures.length; roundNumber++) {
+            System.out.println("Round " + (roundNumber + 1) + ":\n");
+
+            for (matchNumber = 0; matchNumber < matchesPerRound; matchNumber++) {
                 System.out.println("\tMatch " + (matchNumber + 1) + ": " + fixtures[roundNumber][matchNumber] + "\t\n");
             }
 
-            System.out.println("\nYou will have to use the mirror image of these fixtures for return fixtures.");
-
-            if (additionalTeam == true) {
+            if (additionalTeam) {
                 System.out.println("Since you had  " + (teamAmount - 1) + " teams to begin with (an odd number), fixture " + " against team number " + teamAmount + " are byes.");
             }
         }
