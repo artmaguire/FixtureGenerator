@@ -1,4 +1,4 @@
-package Project1;
+package Project1.FixtureGenerator;
 
 import java.util.*;
 
@@ -45,7 +45,7 @@ public class FixtureList {
         String errorMessage2 = "The input provided does not match the expected format. Please enter ";
         int requestTeam, teamsAdded = 0;
 
-        System.out.println("Would you like to add another team to the league? Note: Enter the value \n1. Yes, I would like to add another team.\n2. No, please move on.\n");
+        System.out.println("Would you like to add another team to the league? Note: Enter the value \n1. Yes, I would like to add another team.\n2. No, please move on.\n\n0)Exit\n?)");
         requestTeam = Integer.parseInt(input.nextLine());
 
         if (requestTeam == -1) {

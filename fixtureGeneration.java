@@ -1,6 +1,5 @@
-package Project1;
+package Project1.FixtureGenerator;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,19 +10,11 @@ import java.util.Scanner;
 public class fixtureGeneration {
     private static Administrator loggedInAdmin = null;
     private static String adminFileName = "adminFile.csv";
+    private static String leaguesFileName = "leaguesFileName.csv";
     private static ArrayList<Administrator> admins = new ArrayList<>();
     private static Scanner sc = new Scanner(System.in);
 
-    public static void main(String[] args) {
-
-        int numberOfTeams, totalNumberOfRounds, numberOfMatchesPerRound;
-        int roundNumber, matchNumber, homeTeamNumber, awayTeamNumber, even, odd;
-        boolean additionalTeamIncluded = false;
-        String selection;
-        String[][] fixtures;
-        String[][] reverseFixtures;
-        String[] elementsOfFixtures;
-        String fixtureAsText;
+    public static void main(String[] args) throws FileNotFoundException {
 
         loadAdministrators();
 
@@ -31,90 +22,13 @@ public class fixtureGeneration {
 
         writeAdministrators();
 
-
-        /*selection = getNumberOfTeams("Number Of Teams", "Please enter a number in the range 2 to 99");
-        if (selection != null) {
-            numberOfTeams = Integer.parseInt(selection);
-            if (numberOfTeams % 2 == 1) {
-                numberOfTeams++;
-                additionalTeamIncluded = true;
-            }
-            totalNumberOfRounds = numberOfTeams-1;
-            numberOfMatchesPerRound = numberOfTeams/2;
-            fixtures = new String[totalNumberOfRounds][numberOfMatchesPerRound];
-
-           /* for (roundNumber = 0; roundNumber < totalNumberOfRounds; roundNumber++) {
-                for (matchNumber = 0; matchNumber < numberOfMatchesPerRound; matchNumber++) {
-                    homeTeamNumber = (roundNumber + matchNumber) % (numberOfTeams - 1);
-                    awayTeamNumber = (numberOfTeams - 1 - matchNumber + roundNumber) % (numberOfTeams - 1);
-                    if (matchNumber == 0) {
-                        awayTeamNumber = numberOfTeams - 1;
-                    }
-                    fixtures[roundNumber][matchNumber] = (homeTeamNumber + 1) + " vs " + (awayTeamNumber + 1);
-                    }
-                }/*
-                reverseFixtures = new String[totalNumberOfRounds][numberOfMatchesPerRound];
-            even = 0;
-            odd = numberOfTeams / 2;
-            for (int i = 0; i < fixtures.length; i++) {
-                if (i % 2 == 0) {
-                    reverseFixtures[i] = fixtures[even++];
-                } else {
-                    reverseFixtures[i] = fixtures[odd++];
-                }
-            }
-            fixtures = reverseFixtures;
-
-            for (roundNumber = 0; roundNumber < fixtures.length; roundNumber++) {
-                if (roundNumber % 2 == 1) {
-                    fixtureAsText = fixtures[roundNumber][0];
-                    elementsOfFixtures = fixtureAsText.split(" vs ");
-                    fixtures[roundNumber][0] = elementsOfFixtures[1] + " vs " + elementsOfFixtures[0];
-                }
-            }
-            for (roundNumber = 0; roundNumber < totalNumberOfRounds; roundNumber++) {
-                System.out.println("Round " + (roundNumber + 1) + "\t\t");
-                for (matchNumber = 0; matchNumber < numberOfMatchesPerRound; matchNumber++) {
-                    System.out.println("\tMatch " + (matchNumber + 1) + ": " + fixtures[roundNumber][matchNumber] + "\t");
-                    System.out.println();
-                }
-                System.out.println("\nYou will have to use the mirror image");
-                System.out.println(" of these fixtures for return fixtures.");
-                if (additionalTeamIncluded) {
-                    System.out.println("\nSince you had " +  (numberOfTeams - 1) + " teams at the outset (uneven number) , fixtures " + "against team number " + numberOfTeams + " are byes");
-                }
-            }
-        }
-    } */
-
-   /* public static String getNumberOfTeams(String windowMessage, String windowTitle) {
-
-        boolean validInput = false;
-        int numberOfnumberOfTeams;
-        String userInput = "", pattern = "[0-9]{1,2}";
-        String errorMessage = "Invalid Input. \n\nYou are not permitted to have 2 to 99 teams. \nSelect OK to retry";
-
-        while (!(validInput)) {
-            userInput = JOptionPane.showInputDialog(null, windowMessage, windowTitle, 3);
-            if (userInput == null) {
-                validInput = true;
-            } else if (!(userInput.matches(pattern))) {
-                JOptionPane.showMessageDialog(null, errorMessage, "Error in user input.", 2);
-            } else {
-                numberOfnumberOfTeams = Integer.parseInt(userInput);
-                if (numberOfnumberOfTeams < 2) {
-                    JOptionPane.showMessageDialog(null, errorMessage, "Error in user input", 2);
-                } else {
-                    validInput = true;
-                }
-            }
-        }
-        return userInput;
-    }
-}} */
-
     }
 
+    /**
+     * @author Art Maguire: 16150201
+     * Program reads from a file and splits the values into an array and then adds values into the global ArrayList.
+     * If the file does not exist, the program will create a new file with the adminFileName.
+     */
     private static void loadAdministrators() {
         File f = new File(adminFileName);
         if(f.isFile()) {
@@ -125,7 +39,7 @@ public class fixtureGeneration {
                 e.printStackTrace();
             }
 
-            while(scanner.hasNext()){
+            while(scanner.hasNext()) {
                 String line = scanner.nextLine();
                 String[] values = line.split(",");
                 admins.add(new Administrator(values[0], values[1]));
@@ -141,6 +55,9 @@ public class fixtureGeneration {
         }
     }
 
+    /**
+     * This method writes the username and password to the file using a PrintWriter.
+     */
     private static void writeAdministrators() {
         try {
             PrintWriter pw = new PrintWriter(adminFileName);
@@ -153,7 +70,11 @@ public class fixtureGeneration {
         }
     }
 
-    private static void createLoginUser() {
+    /**
+     * Creates the interface for interacting with the program, Logging in, Creating a new user and exiting hte program.
+     * The switch in this Method links the method between the loadAdmin Method and the createAdmin Method.
+     */
+    private static void createLoginUser() throws FileNotFoundException {
         boolean exit = false;
         while(!exit) {
             System.out.println("1) Login Existing User\n2) Create New User\n\n0) Exit");
@@ -172,6 +93,10 @@ public class fixtureGeneration {
         }
     }
 
+    /**
+     * This Method allows the user to log in to an existing user using name and password.
+     * It gives the user 3 attempts. If login is successful, the program will show the leagues associated with the user.
+     */
     private static void loginAdmin() {
         int attempts = 3;
         while(attempts > 0) {
@@ -188,7 +113,11 @@ public class fixtureGeneration {
             if(loggedInAdmin != null) {
                 System.out.println("Successfully Logged In\n");
                 attempts = -1;
-                listLeagues();
+                try {
+                    listLeagues();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
             } else {
                 System.out.println("No User Found\n");
                 attempts--;
@@ -196,7 +125,13 @@ public class fixtureGeneration {
         }
     }
 
-    private static void createAdmin() {
+
+    /**
+     * This Method creates a new Administrator and adds it to the admins ArrayList.
+     * The program will check the checkAdmins Method to see if the user exists,
+     * if the user does exist, it will show an appropriate error message.
+     */
+    private static void createAdmin() throws FileNotFoundException {
         System.out.println("\n====================");
         System.out.println("Username: ");
         String username = sc.nextLine();
@@ -206,18 +141,21 @@ public class fixtureGeneration {
         if(checkAdmins(username, password) != null) {
             System.out.println("User Already Exists");
         } else {
-            Administrator newAdmin = new Administrator(username, password); //create new administrator from users inputs
+            Administrator newAdmin = new Administrator(username, password); //create new administrator object from users inputs
             admins.add(newAdmin); //add them to the array of admins
-            loggedInAdmin = newAdmin; //set the new user as the current loggedin user
-            listLeagues();
+            loggedInAdmin = newAdmin; //set the new user as the current logged in user
+                listLeagues();
         }
     }
 
     /**
      * Shows a list of leagues administered by the logged in administrator
      */
-    private static void listLeagues() {
+    private static void listLeagues() throws FileNotFoundException {
         System.out.println("0) Logout");
+        System.out.println("--------------------");
+        System.out.println("1) List Leagues");
+        System.out.println("2) Create New League");
         System.out.println("--------------------");
         System.out.print("?) ");
 
@@ -225,10 +163,55 @@ public class fixtureGeneration {
         option = Integer.parseInt(sc.nextLine());
 
         switch (option) {
-            case 0: loggedInAdmin = null; return;
+            case 0: loggedInAdmin = null; break;
+            case 1: showleague(); break;
         }
     }
 
+    private static void showleague() throws FileNotFoundException {
+        File listLeaguesFile = new File(leaguesFileName);
+        ArrayList<ArrayList<ArrayList<String>>> leagueEntries = new ArrayList<>();
+        ArrayList<String> leagueID = new ArrayList<>();
+        ArrayList<String> leagueName = new ArrayList<>();
+        ArrayList<String> leagueAdmin = new ArrayList<>();
+        Scanner list;
+        if (listLeaguesFile.exists()) {
+            list = new Scanner(listLeaguesFile);
+            while (list.hasNext()) {
+                String entryFromFile = list.nextLine();
+                String fileElements[] = entryFromFile.split(",");
+                leagueID.add(fileElements[0]);
+                leagueName.add(fileElements[1]);
+                leagueAdmin.add(fileElements[2]);
+                leagueEntries.get(0).add(leagueID);
+                leagueEntries.get(1).add(leagueName);
+                leagueEntries.get(2).add(leagueAdmin);
+                System.out.println("Leagues\n" + leagueAdmin + leagueID + leagueName);
+            }
+            list.close();
+        }
+    }
+
+
+    private static void createNewLeague() {
+        System.out.println("0) Logout");
+        System.out.println("--------------------");
+        System.out.println("1) How many teams would you like in your league?");
+        System.out.println("--------------------");
+        System.out.print("?) ");
+
+        int option = -1;
+        option = Integer.parseInt(sc.nextLine());
+
+        switch (option) {
+            case 0: loggedInAdmin = null; break;
+            case 1: //Thomas' file.
+        }
+    }
+
+    /**
+     * Checks all entries in the admins ArrayList for a valid username and password and returns boolean value.
+     */
     private static Administrator checkAdmins(String username, String password) {
         for(Administrator a : admins) {
             if(a.check(username, password)) return a;

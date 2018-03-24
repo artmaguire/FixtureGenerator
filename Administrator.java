@@ -1,4 +1,4 @@
-package Project1;
+package Project1.FixtureGenerator;
 
 public class Administrator {
     private String username;

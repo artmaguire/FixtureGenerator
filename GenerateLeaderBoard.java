@@ -2,8 +2,7 @@ package Project1.FixtureGenerator;
 
 import java.io.*;
 import java.util.*;
-public class GenerateLeaderBoard
-{
+public class GenerateLeaderBoard {
     /**
      *	Conor Finnegan: 17184258
      */
