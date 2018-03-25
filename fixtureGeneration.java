@@ -12,16 +12,17 @@ public class fixtureGeneration {
     private static String adminFileName = "adminFile.csv";
     private static String leaguesFileName = "leaguesFileName.csv";
     private static ArrayList<ArrayList<String>> admins = new ArrayList<>();
+    private static ArrayList<ArrayList<String>> leagues = new ArrayList<>();
     private static Scanner sc = new Scanner(System.in);
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
 
         loadAdministrators();
 
         createLoginUser();
 
         writeAdministrators();
-
+        writeLeagues();
     }
 
     /**
@@ -60,32 +61,17 @@ public class fixtureGeneration {
     }
 
     /**
-     * This method writes the username and password to the file using a PrintWriter.
-     */
-    private static void writeAdministrators() {
-        try {
-            PrintWriter pw = new PrintWriter(adminFileName);
-            for(ArrayList<String> admin : admins) {
-                pw.println(admin.get(0) + "," + admin.get(1) + "," + admin.get(2));
-            }
-            pw.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("Failed to create: " + adminFileName + "\n" + e.getStackTrace());
-        }
-    }
-
-    /**
      * Creates the interface for interacting with the program, Logging in, Creating a new user and exiting hte program.
      * The switch in this Method links the method between the loadAdmin Method and the createAdmin Method.
      */
-    private static void createLoginUser() throws FileNotFoundException {
+    private static void createLoginUser() throws IOException {
         boolean exit = false;
         while(!exit) {
             System.out.println("1) Login Existing User\n2) Create New User\n\n0) Exit");
             System.out.println("--------------------");
             System.out.print("?) ");
 
-            int option = -1;
+            int option;
 
             option = Integer.parseInt(sc.nextLine());
 
@@ -101,7 +87,7 @@ public class fixtureGeneration {
      * This Method allows the user to log in to an existing user using name and password.
      * It gives the user 3 attempts. If login is successful, the program will show the leagues associated with the user.
      */
-    private static void loginAdmin() {
+    private static void loginAdmin() throws IOException {
         int attempts = 3;
         while(attempts > 0) {
             System.out.println("\n====================");
@@ -135,7 +121,7 @@ public class fixtureGeneration {
      * The program will check the checkAdmins Method to see if the user exists,
      * if the user does exist, it will show an appropriate error message.
      */
-    private static void createAdmin() throws FileNotFoundException {
+    private static void createAdmin() throws IOException {
         System.out.println("\n====================");
         System.out.println("Username: ");
         String username = sc.nextLine();
@@ -158,69 +144,209 @@ public class fixtureGeneration {
     /**
      * Shows a list of leagues administered by the logged in administrator
      */
-    private static void listLeagues() throws FileNotFoundException {
+    private static void listLeagues() throws IOException {
+        leagues.clear(); //Empties arraylist before reading leagues from file
+        File listLeaguesFile = new File(leaguesFileName);
+        if(listLeaguesFile.exists()) {
+            Scanner list;
+            list = new Scanner(listLeaguesFile);
+            while (list.hasNext()) {
+                ArrayList<String> league = new ArrayList<>(4);
+                String entryFromFile = list.nextLine();
+                String fileElements[] = entryFromFile.split(",");
+                league.add(fileElements[0]);
+                league.add(fileElements[1]);
+                league.add(fileElements[2]);
+                league.add(fileElements[3]);
+                leagues.add(league);
+            }
+            list.close();
+        }
+
         boolean exit = false;
         while(!exit) {
-            System.out.println("0) Logout");
+            System.out.println("0) Go Back");
             System.out.println("--------------------");
             System.out.println("1) List Leagues");
             System.out.println("2) Create New League");
             System.out.println("--------------------");
             System.out.print("?) ");
 
-            int option = -1;
+            int option;
             option = Integer.parseInt(sc.nextLine());
 
             switch (option) {
                 case 0: exit = true; break;
                 case 1: showleague(); break;
+                case 2: createNewLeague(); break;
             }
         }
     }
 
     private static void showleague() throws FileNotFoundException {
-        File listLeaguesFile = new File(leaguesFileName);
-        ArrayList<ArrayList<ArrayList<String>>> leagueEntries = new ArrayList<>();
-        ArrayList<String> leagueID = new ArrayList<>();
-        ArrayList<String> leagueName = new ArrayList<>();
-        ArrayList<String> leagueAdmin = new ArrayList<>();
-        Scanner list;
-        if (!listLeaguesFile.exists()) {
+        if (leagues.isEmpty()) {
             System.out.println("\nNo Leagues Exist\n");
-        } else {
-            list = new Scanner(listLeaguesFile);
-            while (list.hasNext()) {
-                String entryFromFile = list.nextLine();
-                String fileElements[] = entryFromFile.split(",");
-                leagueID.add(fileElements[0]);
-                leagueName.add(fileElements[1]);
-                leagueAdmin.add(fileElements[2]);
-                leagueEntries.get(0).add(leagueID);
-                leagueEntries.get(1).add(leagueName);
-                leagueEntries.get(2).add(leagueAdmin);
-                System.out.println("Leagues\n" + leagueAdmin + leagueID + leagueName);
-            }
-            list.close();
+            return;
         }
+
+        ArrayList<ArrayList<String>> adminLeagues = new ArrayList<>();
+        for(ArrayList<String> league : leagues) {
+            if(league.get(2).equals(loggedInAdmin.get(0))) {
+                adminLeagues.add(league);
+            }
+        }
+
+        if(adminLeagues.isEmpty()) {
+            System.out.println("\nNo Leagues Exist\n");
+            return;
+        }
+
+        System.out.println("0) Go Back");
+        System.out.println("--------------------");
+        for(int i = 0; i < adminLeagues.size(); i++) {
+            System.out.println(i + 1 + ") " + adminLeagues.get(i).get(1));
+        }
+        System.out.println("--------------------");
+        System.out.print("?) ");
+
+        int option;
+        option = Integer.parseInt(sc.nextLine());
+
+        if(option == 0) {
+            return;
+        }
+
+        if(option < 0 || option > adminLeagues.size()) {
+            System.out.println("Invalid Option.");
+            return;
+        }
+
+        ArrayList<String> league = adminLeagues.get(option - 1);
+        ArrayList<ArrayList<String>> teams = new ArrayList<>();
+        readTeams(league, teams);
+        showTeams(teams);
+        leagueOptions(league, teams);
     }
 
 
     private static void createNewLeague() throws IOException {
         File listLeaguesFile = new File(leaguesFileName);
         listLeaguesFile.createNewFile(); //If file already exists, will do nothing.
+
         System.out.println("0) Go Back");
         System.out.println("--------------------");
-        System.out.println("1) How many teams would you like in your league?");
-        System.out.println("--------------------");
-        System.out.print("?) ");
+        System.out.println("Name you league.");
 
-        int option = -1;
-        option = Integer.parseInt(sc.nextLine());
+        String name;
+        name = sc.nextLine();
 
-        switch (option) {
-            case 0: return;
-            case 1: //Thomas' file.
+        if (name.equals("0")) {
+            return;
         }
+
+        ArrayList<String> league = new ArrayList<>(4);
+        league.add(String.valueOf(leagues.size() + 1)); //League ID
+        league.add(name);
+        league.add(loggedInAdmin.get(0)); //Logged In AdminID
+
+        String leagueTeamsFileName = league.get(0) + "teams.csv";
+        File leagueTeamFile = new File(leagueTeamsFileName);
+        leagueTeamFile.createNewFile();
+
+        league.add(leagueTeamsFileName);
+
+        String leagueOutcomesFileName = league.get(0) + "outcomes.csv";
+        File leagueOutcomesFile = new File(leagueOutcomesFileName);
+        leagueOutcomesFile.createNewFile();
+
+        league.add(leagueOutcomesFileName);
+
+        String leagueFixturesFileName = league.get(0) + "fixtures.csv";
+        File leagueFixturesFile = new File(leagueFixturesFileName);
+        leagueFixturesFile.createNewFile();
+
+        league.add(leagueFixturesFileName);
+
+        leagues.add(league);
+
+        ArrayList<ArrayList<String>> teams = new ArrayList<>(); //create empty teams arraylist
+        leagueOptions(league, teams);
+    }
+
+    private static void readTeams(ArrayList<String> league, ArrayList<ArrayList<String>> teams) throws FileNotFoundException {
+        File teamsFile = new File(league.get(3));
+        if(teamsFile.exists()) {
+            Scanner list;
+            list = new Scanner(teamsFile);
+            while (list.hasNext()) {
+                ArrayList<String> team = new ArrayList<>(2);
+                String entryFromFile = list.nextLine();
+                String fileElements[] = entryFromFile.split(",");
+                team.add(fileElements[0]);
+                team.add(fileElements[1]);
+                teams.add(team);
+            }
+            list.close();
+        }
+    }
+
+    private static void showTeams(ArrayList<ArrayList<String>> teams) {
+        System.out.println("\n--------------------");
+        for(ArrayList<String> team : teams) {
+            System.out.println(team.get(0) + " - " + team.get(1));
+        }
+        if(teams.isEmpty()) {
+            System.out.println("No Teams.");
+        }
+        System.out.println("--------------------\n");
+
+    }
+
+    private static void leagueOptions(ArrayList<String> league, ArrayList<ArrayList<String>> teams) throws FileNotFoundException {
+        boolean exit = false;
+        while(!exit) {
+            System.out.println("0) Go Back");
+            System.out.println("--------------------");
+            System.out.println("1) Add New Team");
+            if (!teams.isEmpty()) {
+                System.out.println("2) Display All Fixtures");
+                System.out.println("3) Display Table");
+                System.out.println("4) Display Teams");
+            }
+            System.out.println("--------------------");
+            System.out.print("?) ");
+
+            int option;
+            option = Integer.parseInt(sc.nextLine());
+
+            switch (option) {
+                case 0: exit = true; break;
+                case 1: addNewTeam(teams, league.get(3)); break;
+                /*case 2: displayFixtures(); break;
+                case 3: generateLeaderboard(); break;*/
+                case 4: showTeams(teams); break;
+            }
+        }
+    }
+
+    private static void addNewTeam(ArrayList<ArrayList<String>> teams, String teamFileName) throws FileNotFoundException {
+        System.out.println("0) Go Back");
+        System.out.println("--------------------");
+        System.out.println("Enter Team Name.");
+
+        String name;
+        name = sc.nextLine();
+
+        if (name.equals("0")) {
+            return;
+        }
+
+        ArrayList<String> team = new ArrayList<>(2);
+        team.add(String.valueOf(teams.size() + 1)); //League ID
+        team.add(name);
+        teams.add(team);
+
+        writeTeams(teams, teamFileName);
     }
 
     /**
@@ -233,5 +359,33 @@ public class fixtureGeneration {
             }
         }
         return null;
+    }
+
+    /**
+     * This method writes the username and password to the file using a PrintWriter.
+     */
+    private static void writeAdministrators() throws FileNotFoundException {
+        PrintWriter pw = new PrintWriter(adminFileName);
+        for(ArrayList<String> admin : admins) {
+            pw.println(admin.get(0) + "," + admin.get(1) + "," + admin.get(2));
+        }
+        pw.close();
+    }
+
+    private static void writeLeagues() throws FileNotFoundException {
+        PrintWriter pw = new PrintWriter(leaguesFileName);
+        for (ArrayList<String> league : leagues) {
+            pw.println(league.get(0) + "," + league.get(1) + "," + league.get(2) + "," + league.get(3) + "," +
+                    leagues.get(4) + "," + leagues.get(5));
+        }
+        pw.close();
+    }
+
+    private static void writeTeams(ArrayList<ArrayList<String>> teams, String teamFileName) throws FileNotFoundException {
+        PrintWriter pw = new PrintWriter(teamFileName);
+        for (ArrayList<String> team : teams) {
+            pw.println(team.get(0) + "," + team.get(1));
+        }
+        pw.close();
     }
 }
