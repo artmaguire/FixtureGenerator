@@ -179,7 +179,7 @@ public class fixtureGeneration {
         ArrayList<String> leagueAdmin = new ArrayList<>();
         Scanner list;
         if (!listLeaguesFile.exists()) {
-            System.out.println("No Leagues Exist");
+            System.out.println("\nNo Leagues Exist\n");
         } else {
             list = new Scanner(listLeaguesFile);
             while (list.hasNext()) {
