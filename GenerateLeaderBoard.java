@@ -82,7 +82,7 @@ public class GenerateLeaderBoard {
 
             in = new Scanner(inputFile3);
             while(in.hasNext())
-            {
+           {
                 fileElements = (in.nextLine()).split(",");
                 results.get(0).add(Integer.parseInt(fileElements[0]));
                 results.get(1).add(Integer.parseInt(fileElements[1]));

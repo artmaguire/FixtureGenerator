@@ -3,6 +3,15 @@ package Project1.FixtureGenerator;
 public class Administrator {
     private String username;
     private String password;
+    private int adminID;
+
+    public int getAdminID() {
+        return adminID;
+    }
+
+    public void setAdminID(int adminID) {
+        this.adminID = adminID;
+    }
 
     public Administrator(String username, String password) {
         this.username = username;

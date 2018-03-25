@@ -152,19 +152,22 @@ public class fixtureGeneration {
      * Shows a list of leagues administered by the logged in administrator
      */
     private static void listLeagues() throws FileNotFoundException {
-        System.out.println("0) Logout");
-        System.out.println("--------------------");
-        System.out.println("1) List Leagues");
-        System.out.println("2) Create New League");
-        System.out.println("--------------------");
-        System.out.print("?) ");
+        boolean exit = false;
+        while(!exit) {
+            System.out.println("0) Logout");
+            System.out.println("--------------------");
+            System.out.println("1) List Leagues");
+            System.out.println("2) Create New League");
+            System.out.println("--------------------");
+            System.out.print("?) ");
 
-        int option = -1;
-        option = Integer.parseInt(sc.nextLine());
+            int option = -1;
+            option = Integer.parseInt(sc.nextLine());
 
-        switch (option) {
-            case 0: loggedInAdmin = null; break;
-            case 1: showleague(); break;
+            switch (option) {
+                case 0: exit = true; break;
+                case 1: showleague(); break;
+            }
         }
     }
 
@@ -175,7 +178,9 @@ public class fixtureGeneration {
         ArrayList<String> leagueName = new ArrayList<>();
         ArrayList<String> leagueAdmin = new ArrayList<>();
         Scanner list;
-        if (listLeaguesFile.exists()) {
+        if (!listLeaguesFile.exists()) {
+            System.out.println("No Leagues Exist");
+        } else {
             list = new Scanner(listLeaguesFile);
             while (list.hasNext()) {
                 String entryFromFile = list.nextLine();
