@@ -198,8 +198,10 @@ public class fixtureGeneration {
     }
 
 
-    private static void createNewLeague() {
-        System.out.println("0) Logout");
+    private static void createNewLeague() throws IOException {
+        File listLeaguesFile = new File(leaguesFileName);
+        listLeaguesFile.createNewFile(); //If file already exists, will do nothing.
+        System.out.println("0) Go Back");
         System.out.println("--------------------");
         System.out.println("1) How many teams would you like in your league?");
         System.out.println("--------------------");
@@ -209,7 +211,7 @@ public class fixtureGeneration {
         option = Integer.parseInt(sc.nextLine());
 
         switch (option) {
-            case 0: loggedInAdmin = null; break;
+            case 0: return;
             case 1: //Thomas' file.
         }
     }
