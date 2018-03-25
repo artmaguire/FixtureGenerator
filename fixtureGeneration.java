@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class fixtureGeneration {
-    private static Administrator loggedInAdmin = null;
+    private static ArrayList<String> loggedInAdmin = null;
     private static String adminFileName = "adminFile.csv";
     private static String leaguesFileName = "leaguesFileName.csv";
-    private static ArrayList<Administrator> admins = new ArrayList<>();
+    private static ArrayList<ArrayList<String>> admins = new ArrayList<>();
     private static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -42,7 +42,11 @@ public class fixtureGeneration {
             while(scanner.hasNext()) {
                 String line = scanner.nextLine();
                 String[] values = line.split(",");
-                admins.add(new Administrator(values[0], values[1]));
+                ArrayList<String> admin = new ArrayList<>();
+                admin.add(values[0]);
+                admin.add(values[1]);
+                admin.add(values[2]);
+                admins.add(admin);
             }
             scanner.close();
         } else {
@@ -61,8 +65,8 @@ public class fixtureGeneration {
     private static void writeAdministrators() {
         try {
             PrintWriter pw = new PrintWriter(adminFileName);
-            for(Administrator a : admins) {
-                pw.println(a.getCSV());
+            for(ArrayList<String> admin : admins) {
+                pw.println(admin.get(0) + "," + admin.get(1) + "," + admin.get(2));
             }
             pw.close();
         } catch (FileNotFoundException e) {
@@ -141,10 +145,13 @@ public class fixtureGeneration {
         if(checkAdmins(username, password) != null) {
             System.out.println("User Already Exists");
         } else {
-            Administrator newAdmin = new Administrator(username, password); //create new administrator object from users inputs
-            admins.add(newAdmin); //add them to the array of admins
-            loggedInAdmin = newAdmin; //set the new user as the current logged in user
-                listLeagues();
+            ArrayList<String> admin = new ArrayList<>(3);
+            admin.add(String.valueOf(admins.size() + 1));
+            admin.add(username);
+            admin.add(password);
+            admins.add(admin);
+            loggedInAdmin = admin; //set the new user as the current logged in user
+            listLeagues();
         }
     }
 
@@ -219,9 +226,11 @@ public class fixtureGeneration {
     /**
      * Checks all entries in the admins ArrayList for a valid username and password and returns boolean value.
      */
-    private static Administrator checkAdmins(String username, String password) {
-        for(Administrator a : admins) {
-            if(a.check(username, password)) return a;
+    private static ArrayList<String> checkAdmins(String username, String password) {
+        for(ArrayList<String> admin : admins) {
+            if(admin.get(1).equals(username) & admin.get(2).equals(password)) {
+                return admin;
+            }
         }
         return null;
     }
