@@ -6,15 +6,19 @@ public class GenerateLeaderBoard {
     /**
      *	Conor Finnegan: 17184258
      */
-    public static ArrayList<ArrayList<String>>  teams;
-    public static ArrayList<ArrayList<Integer>> fixtures;
-    public static ArrayList<ArrayList<Integer>> results;
+    public static ArrayList<ArrayList<String>> teamsG;
+    public static ArrayList<ArrayList<Integer>> fixturesG;
+    public static ArrayList<ArrayList<Integer>> resultsG;
     public static int [][] leaderBoard;
     public static void main(String [] args) throws IOException
     {
+        prepareFiles("Teams20152016.txt", "Fixtures20152016.txt", "Outcomes20152016.txt");
+    }
+
+    public static void prepareFiles(String teamsFileName, String fixturesFileName, String outcomesFileName) throws IOException {
         /**If the .txt files can't be found, an error message will be displayed.*/
         boolean readFile;
-        readFile = readFilesIntoArrayLists();
+        readFile = readFilesIntoArrayLists(teamsFileName, fixturesFileName, outcomesFileName);
         if (!readFile)
             System.out.println("One or more files do not exist.");
         else
@@ -27,34 +31,29 @@ public class GenerateLeaderBoard {
         }
     }
 
-    public static boolean readFilesIntoArrayLists() throws IOException
+    public static boolean readFilesIntoArrayLists(String teamsFileName, String fixturesFileName, String outcomesFileName) throws IOException
     {
-        /**I'm declaring new objects. These are the files read*/
-        String filename1 = "Teams20152016.txt";
-        String filename2 = "Fixtures20152016.txt";
-        String filename3 = "Outcomes20152016.txt";
-
         /**I am adding the objects declared above*/
         String fileElements[];
-        File inputFile1 = new File(filename1);
-        File inputFile2 = new File(filename2);
-        File inputFile3 = new File(filename3);
+        File inputFile1 = new File(teamsFileName);
+        File inputFile2 = new File(fixturesFileName);
+        File inputFile3 = new File(outcomesFileName);
 
-        teams = new ArrayList<ArrayList<String>>();
-        teams.add(new ArrayList<String>());
-        teams.add(new ArrayList<String>());
+        teamsG = new ArrayList<ArrayList<String>>();
+        teamsG.add(new ArrayList<String>());
+        teamsG.add(new ArrayList<String>());
 
-        fixtures = new ArrayList<ArrayList<Integer>>();
-        fixtures.add(new ArrayList<Integer>());
-        fixtures.add(new ArrayList<Integer>());
-        fixtures.add(new ArrayList<Integer>());
+        fixturesG = new ArrayList<ArrayList<Integer>>();
+        fixturesG.add(new ArrayList<Integer>());
+        fixturesG.add(new ArrayList<Integer>());
+        fixturesG.add(new ArrayList<Integer>());
 
-        results = new ArrayList<ArrayList<Integer>>();
-        results.add(new ArrayList<Integer>());
-        results.add(new ArrayList<Integer>());
-        results.add(new ArrayList<Integer>());
+        resultsG = new ArrayList<ArrayList<Integer>>();
+        resultsG.add(new ArrayList<Integer>());
+        resultsG.add(new ArrayList<Integer>());
+        resultsG.add(new ArrayList<Integer>());
 
-        /**If all the files are found, the teams, fixtures and outcomes will be displayed*/
+        /**If all the files are found, the teamsG, fixturesG and outcomes will be displayed*/
         if (inputFile1.exists() && inputFile2.exists() && inputFile3.exists())
         {
             Scanner in;
@@ -65,8 +64,8 @@ public class GenerateLeaderBoard {
                 /**This splits the .txt file into separate substrings which go in separate columns, eg "1","AFC Bournemouth"*/
                 fileElements = (in.nextLine()).split(",");
                 /**After it is split, the .get method retrieves the data from the file*/
-                teams.get(0).add(fileElements[0]);
-                teams.get(1).add(fileElements[1]);
+                teamsG.get(0).add(fileElements[0]);
+                teamsG.get(1).add(fileElements[1]);
             }
             in.close();
 
@@ -74,9 +73,9 @@ public class GenerateLeaderBoard {
             while(in.hasNext())
             {
                 fileElements = (in.nextLine()).split(",");
-                fixtures.get(0).add(Integer.parseInt(fileElements[0]));
-                fixtures.get(1).add(Integer.parseInt(fileElements[1]));
-                fixtures.get(2).add(Integer.parseInt(fileElements[2]));
+                fixturesG.get(0).add(Integer.parseInt(fileElements[0]));
+                fixturesG.get(1).add(Integer.parseInt(fileElements[1]));
+                fixturesG.get(2).add(Integer.parseInt(fileElements[2]));
             }
             in.close();
 
@@ -84,9 +83,9 @@ public class GenerateLeaderBoard {
             while(in.hasNext())
            {
                 fileElements = (in.nextLine()).split(",");
-                results.get(0).add(Integer.parseInt(fileElements[0]));
-                results.get(1).add(Integer.parseInt(fileElements[1]));
-                results.get(2).add(Integer.parseInt(fileElements[2]));
+                resultsG.get(0).add(Integer.parseInt(fileElements[0]));
+                resultsG.get(1).add(Integer.parseInt(fileElements[1]));
+                resultsG.get(2).add(Integer.parseInt(fileElements[2]));
             }
             in.close();
             return true;
@@ -97,28 +96,28 @@ public class GenerateLeaderBoard {
 
     public static void createEmptyLeaderBoard()
     {
-        /** finds out the number of teams which determines the number of rows*/
-        int rows = teams.get(0).size();
+        /** finds out the number of teamsG which determines the number of rows*/
+        int rows = teamsG.get(0).size();
         int columns = 14;
         leaderBoard = new int[rows][columns];
         for (int i = 0; i < leaderBoard.length; i++)
-            leaderBoard[i][0] = Integer.parseInt(teams.get(0).get(i));
+            leaderBoard[i][0] = Integer.parseInt(teamsG.get(0).get(i));
     }
 
     public static void processResults()
     {
         int fixtureNumber, homeScore, awayScore, homeNumber, awayNumber;
         int position;
-        for (int i = 0; i < results.get(0).size(); i++)
+        for (int i = 0; i < resultsG.get(0).size(); i++)
         {
-            /**I'm using the .get method to get the fixtures, home score, away score, etc*/
-            fixtureNumber  = results.get(0).get(i);
-            homeScore  = results.get(1).get(i);
-            awayScore  = results.get(2).get(i);
-            position       = fixtures.get(0).indexOf(fixtureNumber);
-            homeNumber = fixtures.get(1).get(position);
-            awayNumber = fixtures.get(2).get(position);
-            /**If the game ends in a draw, both teams get a point*/
+            /**I'm using the .get method to get the fixturesG, home score, away score, etc*/
+            fixtureNumber  = resultsG.get(0).get(i);
+            homeScore  = resultsG.get(1).get(i);
+            awayScore  = resultsG.get(2).get(i);
+            position       = fixturesG.get(0).indexOf(fixtureNumber);
+            homeNumber = fixturesG.get(1).get(position);
+            awayNumber = fixturesG.get(2).get(position);
+            /**If the game ends in a draw, both teamsG get a point*/
             if (homeScore == awayScore)
             {											   /**0,1,0 = 0 wins, 1 draw, 0 losses*/
                 recordFixtureResultForHomeTeam(homeNumber,0,1,0,homeScore,awayScore,1);
@@ -195,12 +194,12 @@ public class GenerateLeaderBoard {
     {
         int aTeamNumber;
         String aTeamName, formatStringTeamName;
-        String longestTeamName       = teams.get(1).get(0);
+        String longestTeamName       = teamsG.get(1).get(0);
         int    longestTeamNameLength = longestTeamName.length();
 
-        for (int i = 1; i < teams.get(1).size(); i++)
+        for (int i = 1; i < teamsG.get(1).size(); i++)
         {
-            longestTeamName = teams.get(1).get(i);
+            longestTeamName = teamsG.get(1).get(i);
             if (longestTeamNameLength < longestTeamName.length())
                 longestTeamNameLength = longestTeamName.length();
         }
@@ -211,7 +210,7 @@ public class GenerateLeaderBoard {
         for (int i = 0; i < leaderBoard.length; i++)
         {
             aTeamNumber       = leaderBoard[i][0];
-            aTeamName         = teams.get(1).get(aTeamNumber - 1);
+            aTeamName         = teamsG.get(1).get(aTeamNumber - 1);
             System.out.printf(formatStringTeamName, aTeamName);
             System.out.printf("%4d", leaderBoard[i][1]);
             System.out.printf("%4d", leaderBoard[i][2]);

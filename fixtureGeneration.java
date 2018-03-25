@@ -4,9 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import static Project1.FixtureGenerator.GenerateLeaderBoard.prepareFiles;
 
 public class fixtureGeneration {
     private static ArrayList<String> loggedInAdmin = null;
@@ -186,7 +187,7 @@ public class fixtureGeneration {
         }
     }
 
-    private static void showleague() throws FileNotFoundException {
+    private static void showleague() throws IOException {
         if (leagues.isEmpty()) {
             System.out.println("\nNo Leagues Exist\n");
             return;
@@ -252,13 +253,13 @@ public class fixtureGeneration {
         league.add(name);
         league.add(loggedInAdmin.get(0)); //Logged In AdminID
 
-        String leagueTeamsFileName = league.get(0) + "teams.csv";
+        String leagueTeamsFileName = league.get(0) + "teamsG.csv";
         File leagueTeamFile = new File(leagueTeamsFileName);
         leagueTeamFile.createNewFile();
 
         league.add(leagueTeamsFileName);
 
-        String leagueFixturesFileName = league.get(0) + "fixtures.csv";
+        String leagueFixturesFileName = league.get(0) + "fixturesG.csv";
         File leagueFixturesFile = new File(leagueFixturesFileName);
         leagueFixturesFile.createNewFile();
 
@@ -272,7 +273,7 @@ public class fixtureGeneration {
 
         leagues.add(league);
 
-        ArrayList<ArrayList<String>> teams = new ArrayList<>(); //create empty teams arraylist
+        ArrayList<ArrayList<String>> teams = new ArrayList<>(); //create empty teamsG arraylist
         leagueOptions(league, teams);
     }
 
@@ -308,7 +309,7 @@ public class fixtureGeneration {
     private static String[][] fixtures;
     private static ArrayList<ArrayList<String>> outcomes = new ArrayList<>();
 
-    private static void leagueOptions(ArrayList<String> league, ArrayList<ArrayList<String>> teams) throws FileNotFoundException {
+    private static void leagueOptions(ArrayList<String> league, ArrayList<ArrayList<String>> teams) throws IOException {
         boolean exit = false;
 
         while(!exit) {
@@ -343,7 +344,7 @@ public class fixtureGeneration {
                     fixtureOptions(teams, league.get(4), league.get(5));
                     break;
                 }
-                case 3: generateLeaderboard(league.get(3), league.get(4), league.get(5)); break;
+                case 3: prepareFiles(league.get(3), league.get(4), league.get(5)); break;
                 case 4: showTeams(teams); break;
             }
         }
@@ -370,7 +371,7 @@ public class fixtureGeneration {
     }
 
     private static void readFixturesOutcomes(String fixturesFileName, int roundAmount, int teamAmount, String outcomesFileName) throws FileNotFoundException {
-        System.out.println("Load fixtures into variable from: " + fixturesFileName);
+        System.out.println("Load fixturesG into variable from: " + fixturesFileName);
         System.out.println("Using roundAmount: " + roundAmount + " & teamAmount: " + teamAmount);
 
         int matchesPerRound = teamAmount / 2;
@@ -378,13 +379,13 @@ public class fixtureGeneration {
 
         File fixturesFile = new File(fixturesFileName);
         if(fixturesFile.exists()) {
-            System.out.println("Need to read fixtures from: " + fixturesFileName + " into fixtures array");
-            System.out.println("If fixtures array is not completely full, need to re-generate all fixtures");
+            System.out.println("Need to read fixturesG from: " + fixturesFileName + " into fixturesG array");
+            System.out.println("If fixturesG array is not completely full, need to re-generate all fixturesG");
         }
 
-        boolean newFixtures = false;// shows if fixtures have been generated, then previous outcomes are nulled
+        boolean newFixtures = false;// shows if fixturesG have been generated, then previous outcomes are nulled
 
-        if (fixtures[0][0] == null) { //generate new fixtures
+        if (fixtures[0][0] == null) { //generate new fixturesG
             newFixtures = true;
             for (int roundNumber = 0; roundNumber < roundAmount; roundNumber++) {
                 for (int matchNumber = 0; matchNumber < matchesPerRound; matchNumber++) {
@@ -416,7 +417,7 @@ public class fixtureGeneration {
             outcomes.add(i, null);
         }
 
-        if(newFixtures) {
+        //if(!newFixtures) {
             File outcomesFile = new File(outcomesFileName);
             if(outcomesFile.exists()) {
                 Scanner list;
@@ -432,7 +433,7 @@ public class fixtureGeneration {
                 }
                 list.close();
             }
-        }
+        //}
     }
 
     private static void displayFixtures(ArrayList<ArrayList<String>> teams) {
@@ -466,13 +467,9 @@ public class fixtureGeneration {
             }
 
             if (additionalTeam) {
-                //System.out.println("Since you had  " + (teamAmount - 1) + " teams to begin with (an odd number), fixture " + " against team number " + teamAmount + " are byes.");
+                //System.out.println("Since you had  " + (teamAmount - 1) + " teamsG to begin with (an odd number), fixture " + " against team number " + teamAmount + " are byes.");
             }
         }
-        System.out.println("If outcomes ArrayList is not empty, show the outcomes beside the fixtures");
-        System.out.println("eg 1) Man City v Liverpool: 3 v 4");
-        System.out.println("Number each fixture by it's ID");
-        System.out.println("eg\t1) Man City v Liverpool\n\t2) Arsenal v Man Utd");
     }
 
     private static void fixtureOptions(ArrayList<ArrayList<String>> teams, String fixturesFileName, String outcomesFileName) throws FileNotFoundException {
@@ -508,8 +505,20 @@ public class fixtureGeneration {
     }
 
     private static void automateOutcomes(String outcomesFileName) throws FileNotFoundException {
-        System.out.println("Use fixtures array to generate random scores for outcomes ArrayList");
+        System.out.println("Use fixturesG array to generate random scores for outcomes ArrayList");
         System.out.println("outcomes Arraylist: fixtureID,homeScore,awayScore");
+
+        for(int i = 0; i < outcomes.size(); i++) {
+            ArrayList<String> outcome = outcomes.get(i);
+            if(outcome == null) {
+                outcome = new ArrayList<>(3);
+                outcome.add(String.valueOf(i));
+                outcome.add("randomHomeScore");
+                outcome.add("randomAwayScore");
+                outcomes.set(i, outcome);
+            }
+        }
+
         writeOutcomes(outcomesFileName);
     }
 
@@ -574,9 +583,24 @@ public class fixtureGeneration {
     }
 
     private static void writeFixtures(String fixturesFileName) throws FileNotFoundException {
-        System.out.println("Then loop through fixtures and save to file: " + fixturesFileName);
-        System.out.println("Format:");
-        System.out.println("fixtureID,homeTeamID,awayTeamID");
+        int roundAmount = fixtures.length;
+        int matchesPerRound = fixtures[0].length;
+
+        PrintWriter pw = new PrintWriter(fixturesFileName);
+
+        for(int roundNumber = 0; roundNumber < roundAmount; roundNumber++) {
+            for(int matchNumber = 0; matchNumber < matchesPerRound; matchNumber++) {
+                int fixtureId = roundNumber * matchesPerRound + matchNumber;
+                String fixtureAsText = fixtures[roundNumber][matchNumber];
+                String[] elementsOfFixture = fixtureAsText.split(" v ");
+                int homeTeamId = Integer.parseInt(elementsOfFixture[0]);
+                int awayTeamId = Integer.parseInt(elementsOfFixture[1]);
+
+                pw.println(fixtureId + "," + homeTeamId + "," + awayTeamId);
+            }
+        }
+        pw.close();
+        System.out.println("Fixtures Saved");
     }
 
     private static void writeOutcomes(String outcomesFileName) throws FileNotFoundException {
