@@ -32,7 +32,7 @@ import java.io.*;
 
             if (filename == null) {
                 System.out.println(errorMessage1);
-            } else if (fileChosen.indexOf((fileChosen.length() - 3), fileChosen.length()) != ".txt" ||  fileChosen.indexOf((fileChosen.length() - 3), fileChosen.length()) != ".csv") {
+            } else if (filename.indexOf((filename.length() - 3), filename.length()) != ".txt" ||  filename.indexOf((filename.length() - 3), filename.length()) != ".csv") {
                 System.out.print(errorMessage2 + "either a .txt file or a .csv file.");
             } else {
                 File userFile = new File(filename);
