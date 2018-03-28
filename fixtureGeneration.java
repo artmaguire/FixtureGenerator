@@ -189,6 +189,9 @@ public class fixtureGeneration {
         }
     }
 
+    /**
+     * This method checks if the leagues file is empty and shows the leagues belonging to the logged in Admin.
+     */
     private static void showleague() throws IOException {
         if (leagues.isEmpty()) {
             System.out.println("\nNo Leagues Exist\n");
@@ -234,7 +237,11 @@ public class fixtureGeneration {
         leagueOptions(league, teams);
     }
 
-
+    /**
+     * This method creates a new league when the Create New League method is called from the switch.
+     * The method creates a new file for the outcomes fixtures and teams from the league.
+     * The method then links to the League Options method.
+     */
     private static void createNewLeague() throws IOException {
         File listLeaguesFile = new File(leaguesFileName);
         listLeaguesFile.createNewFile(); //If file already exists, will do nothing.
@@ -279,6 +286,12 @@ public class fixtureGeneration {
         leagueOptions(league, teams);
     }
 
+    /**
+     * This method reads from the league ArrayList and reads all the teams from the league ArrayList into the Teams ArrayList.
+     * @param league
+     * @param teams
+     * @throws FileNotFoundException
+     */
     private static void readTeams(ArrayList<String> league, ArrayList<ArrayList<String>> teams) throws FileNotFoundException {
         File teamsFile = new File(league.get(3));
         if(teamsFile.exists()) {
@@ -296,6 +309,10 @@ public class fixtureGeneration {
         }
     }
 
+    /**
+     * This Method reads from the teams ArrayList and displays the teams to the console.
+     * @param teams
+     */
     private static void showTeams(ArrayList<ArrayList<String>> teams) {
         System.out.println("\n--------------------");
         for(ArrayList<String> team : teams) {
@@ -311,6 +328,14 @@ public class fixtureGeneration {
     private static String[][] fixtures;
     private static ArrayList<ArrayList<String>> outcomes = new ArrayList<>();
 
+    /**
+     * This method has different options to change the leagues, Adding new teams, Displaying fixtures and Displaying the Table.
+     * The method links between each other method using a switch.
+     * It also adds on an extra team if their is an odd number of teams so that there can be a 'bye' game.
+     * @param league
+     * @param teams
+     * @throws IOException
+     */
     private static void leagueOptions(ArrayList<String> league, ArrayList<ArrayList<String>> teams) throws IOException {
         boolean exit = false;
 
@@ -352,6 +377,12 @@ public class fixtureGeneration {
         }
     }
 
+    /**
+     * This Method adds a new team to the league file and lonks to the WriteTeams method.
+     * @param teams
+     * @param teamFileName
+     * @throws FileNotFoundException
+     */
     private static void addNewTeam(ArrayList<ArrayList<String>> teams, String teamFileName) throws FileNotFoundException {
         System.out.println("0) Go Back");
         System.out.println("--------------------");
@@ -372,6 +403,15 @@ public class fixtureGeneration {
         writeTeams(teams, teamFileName);
     }
 
+    /**
+     * This method reads from the outcomes file and generates the fixtures between teams, and also generated the reverse fixture of the game.
+     * The method then links to the writeFixtures method to write the fixtures and the writeOutcomes method to write the outcomes.
+     * @param fixturesFileName
+     * @param roundAmount
+     * @param teamAmount
+     * @param outcomesFileName
+     * @throws IOException
+     */
     private static void readFixturesOutcomes(String fixturesFileName, int roundAmount, int teamAmount, String outcomesFileName) throws IOException {
         int matchesPerRound = teamAmount / 2;
         int totalMatches = roundAmount * 2 * matchesPerRound;
@@ -388,7 +428,6 @@ public class fixtureGeneration {
                 newFixtures = false;
             }
         }
-
 
         //1st Leg Fixtures
         for (int roundNumber = 0; roundNumber < roundAmount; roundNumber++) {
@@ -443,6 +482,10 @@ public class fixtureGeneration {
         }
     }
 
+    /**
+     * This method displays the fixtures onto the console and displays an appropriate message if now outcomes provided.
+     * @param teams
+     */
     private static void displayFixtures(ArrayList<ArrayList<String>> teams) {
         int teamAmount = teams.size();
         if(additionalTeam) teamAmount++;
@@ -479,6 +522,13 @@ public class fixtureGeneration {
         }
     }
 
+    /**
+     * This method enables the user to edit any of the fixtures to change them to whatever they like or it can automatically set outcomes to the fixtures.
+     * @param teams
+     * @param fixturesFileName
+     * @param outcomesFileName
+     * @throws FileNotFoundException
+     */
     private static void fixtureOptions(ArrayList<ArrayList<String>> teams, String fixturesFileName, String outcomesFileName) throws FileNotFoundException {
         while(true) {
             System.out.println("0) Go Back");
@@ -511,6 +561,11 @@ public class fixtureGeneration {
         }
     }
 
+    /**
+     * This method randomly chooses outcomes for the fixtures and writes to the outcomes file.
+     * @param outcomesFileName
+     * @throws FileNotFoundException
+     */
     private static void automateOutcomes(String outcomesFileName) throws FileNotFoundException {
         System.out.println("Use fixturesG array to generate random scores for outcomes ArrayList");
         System.out.println("outcomes Arraylist: fixtureID,homeScore,awayScore");
@@ -531,6 +586,12 @@ public class fixtureGeneration {
         writeOutcomes(outcomesFileName);
     }
 
+    /**
+     * This method lets the user edit the fixtures and writes the outcomes to the outcomes file.
+     * @param fixtureId
+     * @param outcomeFileName
+     * @throws FileNotFoundException
+     */
     private static void editOutcome(int fixtureId, String outcomeFileName) throws FileNotFoundException {
         System.out.println("Enter Home Team Score:");
         String homeScore = sc.nextLine();
@@ -574,6 +635,10 @@ public class fixtureGeneration {
         pw.close();
     }
 
+    /**
+     * This method writes the leagues to a league file.
+     * @throws FileNotFoundException
+     */
     private static void writeLeagues() throws FileNotFoundException {
         PrintWriter pw = new PrintWriter(leaguesFileName);
         for (ArrayList<String> league : leagues) {
@@ -583,6 +648,12 @@ public class fixtureGeneration {
         pw.close();
     }
 
+    /**
+     * This method writes the teams to the teams file.
+     * @param teams
+     * @param teamFileName
+     * @throws FileNotFoundException
+     */
     private static void writeTeams(ArrayList<ArrayList<String>> teams, String teamFileName) throws FileNotFoundException {
         PrintWriter pw = new PrintWriter(teamFileName);
         for (ArrayList<String> team : teams) {
@@ -591,6 +662,11 @@ public class fixtureGeneration {
         pw.close();
     }
 
+    /**
+     * This method writes the Fixtures out to the fixtures file.
+     * @param fixturesFileName
+     * @throws FileNotFoundException
+     */
     private static void writeFixtures(String fixturesFileName) throws FileNotFoundException {
         int roundAmount = fixtures.length;
         int matchesPerRound = fixtures[0].length;
@@ -613,7 +689,7 @@ public class fixtureGeneration {
     }
 
     /**
-     *
+     * This method writes the outcomes of the fixtures to the outcomes file.
      * @param outcomesFileName
      * @throws FileNotFoundException
      */
@@ -625,5 +701,230 @@ public class fixtureGeneration {
             }
         }
         pw.close();
+    }
+    private class generateLeaderBoard() {
+        /**
+         *	Conor Finnegan: 17184258
+         */
+        public static ArrayList<ArrayList<String>> teamsG;
+        public static ArrayList<ArrayList<Integer>> fixturesG;
+        public static ArrayList<ArrayList<Integer>> resultsG;
+        public static int [][] leaderBoard;
+        public static void main(String [] args) throws IOException
+        {
+            prepareFiles("Teams20152016.txt", "Fixtures20152016.txt", "Outcomes20152016.txt");
+        }
+
+        public static void prepareFiles(String teamsFileName, String fixturesFileName, String outcomesFileName) throws IOException {
+            /**If the .txt files can't be found, an error message will be displayed.*/
+            boolean readFile;
+            readFile = readFilesIntoArrayLists(teamsFileName, fixturesFileName, outcomesFileName);
+            if (!readFile)
+                System.out.println("One or more files do not exist.");
+            else
+            {
+                /**If the .txt files are found, the leaderboard will be created.*/
+                createEmptyLeaderBoard();
+                processResults();
+                orderLeaderBoard();
+                displayLeaderboard();
+            }
+        }
+
+        public static boolean readFilesIntoArrayLists(String teamsFileName, String fixturesFileName, String outcomesFileName) throws IOException
+        {
+            /**I am adding the objects declared above*/
+            String fileElements[];
+            File inputFile1 = new File(teamsFileName);
+            File inputFile2 = new File(fixturesFileName);
+            File inputFile3 = new File(outcomesFileName);
+
+            teamsG = new ArrayList<ArrayList<String>>();
+            teamsG.add(new ArrayList<String>());
+            teamsG.add(new ArrayList<String>());
+
+            fixturesG = new ArrayList<ArrayList<Integer>>();
+            fixturesG.add(new ArrayList<Integer>());
+            fixturesG.add(new ArrayList<Integer>());
+            fixturesG.add(new ArrayList<Integer>());
+
+            resultsG = new ArrayList<ArrayList<Integer>>();
+            resultsG.add(new ArrayList<Integer>());
+            resultsG.add(new ArrayList<Integer>());
+            resultsG.add(new ArrayList<Integer>());
+
+            /**If all the files are found, the teamsG, fixturesG and outcomes will be displayed*/
+            if (inputFile1.exists() && inputFile2.exists() && inputFile3.exists())
+            {
+                Scanner in;
+                /**Scanner reads the .txt files*/
+                in = new Scanner(inputFile1);
+                while(in.hasNext())
+                {
+                    /**This splits the .txt file into separate substrings which go in separate columns, eg "1","AFC Bournemouth"*/
+                    fileElements = (in.nextLine()).split(",");
+                    /**After it is split, the .get method retrieves the data from the file*/
+                    teamsG.get(0).add(fileElements[0]);
+                    teamsG.get(1).add(fileElements[1]);
+                }
+                in.close();
+
+                in = new Scanner(inputFile2);
+                while(in.hasNext())
+                {
+                    fileElements = (in.nextLine()).split(",");
+                    fixturesG.get(0).add(Integer.parseInt(fileElements[0]));
+                    fixturesG.get(1).add(Integer.parseInt(fileElements[1]));
+                    fixturesG.get(2).add(Integer.parseInt(fileElements[2]));
+                }
+                in.close();
+
+                in = new Scanner(inputFile3);
+                while(in.hasNext())
+                {
+                    fileElements = (in.nextLine()).split(",");
+                    resultsG.get(0).add(Integer.parseInt(fileElements[0]));
+                    resultsG.get(1).add(Integer.parseInt(fileElements[1]));
+                    resultsG.get(2).add(Integer.parseInt(fileElements[2]));
+                }
+                in.close();
+                return true;
+            }
+            else
+                return false;
+        }
+
+        public static void createEmptyLeaderBoard()
+        {
+            /** finds out the number of teamsG which determines the number of rows*/
+            int rows = teamsG.get(0).size();
+            int columns = 14;
+            leaderBoard = new int[rows][columns];
+            for (int i = 0; i < leaderBoard.length; i++)
+                leaderBoard[i][0] = Integer.parseInt(teamsG.get(0).get(i));
+        }
+
+        public static void processResults()
+        {
+            int fixtureNumber, homeScore, awayScore, homeNumber, awayNumber;
+            int position;
+            for (int i = 0; i < resultsG.get(0).size(); i++)
+            {
+                /**I'm using the .get method to get the fixturesG, home score, away score, etc*/
+                fixtureNumber  = resultsG.get(0).get(i);
+                homeScore  = resultsG.get(1).get(i);
+                awayScore  = resultsG.get(2).get(i);
+                position       = fixturesG.get(0).indexOf(fixtureNumber);
+                homeNumber = fixturesG.get(1).get(position);
+                awayNumber = fixturesG.get(2).get(position);
+                /**If the game ends in a draw, both teamsG get a point*/
+                if (homeScore == awayScore)
+                {											   /**0,1,0 = 0 wins, 1 draw, 0 losses*/
+                    recordFixtureResultForHomeTeam(homeNumber,0,1,0,homeScore,awayScore,1);
+                    recordFixtureResultForAwayTeam(awayNumber,0,1,0,homeScore,awayScore,1);
+                }
+                /**If the home team wins, they gain 3 points and the away team gets none*/
+                else if (homeScore > awayScore)
+                {
+                    recordFixtureResultForHomeTeam(homeNumber,1,0,0,homeScore,awayScore,3);
+                    recordFixtureResultForAwayTeam(awayNumber,0,0,1,homeScore,awayScore,0);
+                }
+                /**If the away team wins, they get the points*/
+                else
+                {
+                    recordFixtureResultForHomeTeam(homeNumber,0,0,1,homeScore,awayScore,0);
+                    recordFixtureResultForAwayTeam(awayNumber,1,0,0,homeScore,awayScore,3);
+                }
+            }
+        }
+        /**This records the wins, losses, draws, home and away team scores, and points for the home team*/
+        public static void recordFixtureResultForHomeTeam(int hTN, int w, int d, int l,
+        int hTS, int aTS, int p)
+        {
+            leaderBoard[hTN-1][1]++;
+            leaderBoard[hTN-1][2]+= w;
+            leaderBoard[hTN-1][3]+= d;
+            leaderBoard[hTN-1][4]+= l;
+            leaderBoard[hTN-1][5]+= hTS;
+            leaderBoard[hTN-1][6]+= aTS;
+            leaderBoard[hTN-1][12] += (hTS - aTS);
+            leaderBoard[hTN-1][13] += p;
+        }
+        /**This does the same for the away team"*/
+        private static void recordFixtureResultForAwayTeam(int awayNumber, int i, int i1, int i2, int homeScore, int awayScore, int i3) {
+            leaderBoard[aTN-1][1]++;
+            leaderBoard[aTN-1][7]+= w;
+            leaderBoard[aTN-1][8]+= d;
+            leaderBoard[aTN-1][9]+= l;
+            leaderBoard[aTN-1][10]+= aTS;
+            leaderBoard[aTN-1][11]+= hTS;
+            leaderBoard[aTN-1][12] += (aTS - hTS);
+            leaderBoard[aTN-1][13] += p;
+        }
+
+        /**This fills in the empty leaderboard*/
+        public static void orderLeaderBoard()
+        {
+            int [][] temp = new int[leaderBoard.length][leaderBoard[0].length];
+            boolean finished = false;
+            /**This while loop doesn't end until all of the empty rows and columns are filled*/
+            while (!finished)
+            {
+                finished = true;
+                for (int i = 0; i < leaderBoard.length - 1; i++)
+                {
+                    if (leaderBoard[i][13] < leaderBoard[i + 1][13])
+                    {
+                        for (int j = 0; j < leaderBoard[i].length; j++)
+                        {
+                            temp[i][j]            = leaderBoard[i][j];
+                            leaderBoard[i][j]     = leaderBoard[i + 1][j];
+                            leaderBoard[i + 1][j] = temp[i][j];
+                        }
+                        finished = false;
+                    }
+                }
+            }
+        }
+
+        /**This displays the leaderboard*/
+        public static void displayLeaderboard()
+        {
+            int aTeamNumber;
+            String aTeamName, formatStringTeamName;
+            String longestTeamName       = teamsG.get(1).get(0);
+            int    longestTeamNameLength = longestTeamName.length();
+
+            for (int i = 1; i < teamsG.get(1).size(); i++)
+            {
+                longestTeamName = teamsG.get(1).get(i);
+                if (longestTeamNameLength < longestTeamName.length())
+                    longestTeamNameLength = longestTeamName.length();
+            }
+            formatStringTeamName = "%-" + (longestTeamNameLength + 2) + "s";
+            System.out.printf(formatStringTeamName,"Team Name");
+            System.out.println("  GP  HW  HD  HL  GF  GA  AW  AD  AL  GF  GA   GD   TP");
+
+            for (int i = 0; i < leaderBoard.length; i++)
+            {
+                aTeamNumber       = leaderBoard[i][0];
+                aTeamName         = teamsG.get(1).get(aTeamNumber - 1);
+                System.out.printf(formatStringTeamName, aTeamName);
+                System.out.printf("%4d", leaderBoard[i][1]);
+                System.out.printf("%4d", leaderBoard[i][2]);
+                System.out.printf("%4d", leaderBoard[i][3]);
+                System.out.printf("%4d", leaderBoard[i][4]);
+                System.out.printf("%4d", leaderBoard[i][5]);
+                System.out.printf("%4d", leaderBoard[i][6]);
+                System.out.printf("%4d", leaderBoard[i][7]);
+                System.out.printf("%4d", leaderBoard[i][8]);
+                System.out.printf("%4d", leaderBoard[i][9]);
+                System.out.printf("%4d", leaderBoard[i][10]);
+                System.out.printf("%4d", leaderBoard[i][11]);
+                System.out.printf("%5d", leaderBoard[i][12]);
+                System.out.printf("%5d", leaderBoard[i][13]);
+                System.out.println();
+            }
+        }
     }
 }
