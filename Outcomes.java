@@ -13,7 +13,8 @@ public class Outcomes {
             awayScore = (int)(Math.random() * 5);
 
             /**This will print the match number, and both teams' scores*/
-            System.out.printf("%d%d", i, homeScore, awayScore);
+            System.out.println(homeScore + " vs " + awayScore);
+            System.out.println();
         }
     }
 }

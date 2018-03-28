@@ -417,7 +417,7 @@ public class fixtureGeneration {
             outcomes.add(i, null);
         }
 
-        //if(!newFixtures) {
+        if(!newFixtures) {
             File outcomesFile = new File(outcomesFileName);
             if(outcomesFile.exists()) {
                 Scanner list;
@@ -433,7 +433,7 @@ public class fixtureGeneration {
                 }
                 list.close();
             }
-        //}
+        }
     }
 
     private static void displayFixtures(ArrayList<ArrayList<String>> teams) {
@@ -511,14 +511,16 @@ public class fixtureGeneration {
         for(int i = 0; i < outcomes.size(); i++) {
             ArrayList<String> outcome = outcomes.get(i);
             if(outcome == null) {
+                int homeScore, awayScore;
+                String.valueOf(homeScore = (int)(Math.random() * 5));
+                String.valueOf(awayScore = (int)(Math.random() * 5));
                 outcome = new ArrayList<>(3);
                 outcome.add(String.valueOf(i));
-                outcome.add("randomHomeScore");
-                outcome.add("randomAwayScore");
+                outcome.add(String.valueOf(homeScore));
+                outcome.add(String.valueOf(awayScore));
                 outcomes.set(i, outcome);
             }
         }
-
         writeOutcomes(outcomesFileName);
     }
 
@@ -603,6 +605,11 @@ public class fixtureGeneration {
         System.out.println("Fixtures Saved");
     }
 
+    /**
+     *
+     * @param outcomesFileName
+     * @throws FileNotFoundException
+     */
     private static void writeOutcomes(String outcomesFileName) throws FileNotFoundException {
         PrintWriter pw = new PrintWriter(outcomesFileName);
         for (ArrayList<String> outcome : outcomes) {
