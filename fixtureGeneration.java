@@ -379,6 +379,7 @@ public class fixtureGeneration {
 
         File fixturesFile = new File(fixturesFileName);
         if(fixturesFile.exists()) {
+            //Thomas code.
             System.out.println("Need to read fixturesG from: " + fixturesFileName + " into fixturesG array");
             System.out.println("If fixturesG array is not completely full, need to re-generate all fixturesG");
         }
@@ -417,7 +418,7 @@ public class fixtureGeneration {
             outcomes.add(i, null);
         }
 
-        if(!newFixtures) {
+        //if(!newFixtures) {
             File outcomesFile = new File(outcomesFileName);
             if(outcomesFile.exists()) {
                 Scanner list;
@@ -432,7 +433,7 @@ public class fixtureGeneration {
                     outcomes.set(Integer.parseInt(outcome.get(0)), outcome);
                 }
                 list.close();
-            }
+            //}
         }
     }
 
