@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -370,55 +372,57 @@ public class fixtureGeneration {
         writeTeams(teams, teamFileName);
     }
 
-    private static void readFixturesOutcomes(String fixturesFileName, int roundAmount, int teamAmount, String outcomesFileName) throws FileNotFoundException {
-        System.out.println("Load fixturesG into variable from: " + fixturesFileName);
-        System.out.println("Using roundAmount: " + roundAmount + " & teamAmount: " + teamAmount);
-
+    private static void readFixturesOutcomes(String fixturesFileName, int roundAmount, int teamAmount, String outcomesFileName) throws IOException {
         int matchesPerRound = teamAmount / 2;
+        int totalMatches = roundAmount * 2 * matchesPerRound;
         fixtures = new String[roundAmount * 2][matchesPerRound];
+
+        boolean newFixtures = true; // If new fixtures have been generated, then previous outcomes are set to null
 
         File fixturesFile = new File(fixturesFileName);
         if(fixturesFile.exists()) {
-            //Thomas code.
-            System.out.println("Need to read fixturesG from: " + fixturesFileName + " into fixturesG array");
-            System.out.println("If fixturesG array is not completely full, need to re-generate all fixturesG");
+            // Check to see if the correct amount of fixtures are stored in the fixturesFile
+            int lineNumber = (int) Files.lines(Paths.get(fixturesFileName)).count();
+            if (lineNumber == totalMatches) {
+                // If correct amount of fixtures, we can use the outcomes stored in outcomesFile
+                newFixtures = false;
+            }
         }
 
-        boolean newFixtures = false;// shows if fixturesG have been generated, then previous outcomes are nulled
 
-        if (fixtures[0][0] == null) { //generate new fixturesG
-            newFixtures = true;
-            for (int roundNumber = 0; roundNumber < roundAmount; roundNumber++) {
-                for (int matchNumber = 0; matchNumber < matchesPerRound; matchNumber++) {
-                    int homeTeamNumber = (roundNumber + matchNumber) % (teamAmount - 1);
-                    int awayTeamNumber = (teamAmount - 1 - matchNumber + roundNumber) % (teamAmount - 1);
+        //1st Leg Fixtures
+        for (int roundNumber = 0; roundNumber < roundAmount; roundNumber++) {
+            for (int matchNumber = 0; matchNumber < matchesPerRound; matchNumber++) {
+                int homeTeamNumber = (roundNumber + matchNumber) % (teamAmount - 1);
+                int awayTeamNumber = (teamAmount - 1 - matchNumber + roundNumber) % (teamAmount - 1);
 
-                    if (matchNumber == 0) {
-                        awayTeamNumber = teamAmount - 1;
-                    }
-
-                    fixtures[roundNumber][matchNumber] = (homeTeamNumber + 1) + " v " + (awayTeamNumber + 1);
+                if (matchNumber == 0) {
+                    awayTeamNumber = teamAmount - 1;
                 }
-            }
 
-            for (int roundNumber = 0; roundNumber < roundAmount; roundNumber++) {
-                for (int matchNumber = 0; matchNumber < matchesPerRound; matchNumber++) {
-                    String fixtureAsText = fixtures[roundNumber][matchNumber];
-                    String[] elementsOfFixture = fixtureAsText.split(" v ");
-                    fixtures[roundNumber + roundAmount][matchNumber] = elementsOfFixture[1] + " v " + elementsOfFixture[0];
-                }
+                fixtures[roundNumber][matchNumber] = (homeTeamNumber + 1) + " v " + (awayTeamNumber + 1);
             }
-
-            writeFixtures(fixturesFileName);
         }
 
-        int totalMatches = roundAmount * 2 * matchesPerRound;
+        // 2nd Leg (Reverse Fixtures)
+        for (int roundNumber = 0; roundNumber < roundAmount; roundNumber++) {
+            for (int matchNumber = 0; matchNumber < matchesPerRound; matchNumber++) {
+                String fixtureAsText = fixtures[roundNumber][matchNumber];
+                String[] elementsOfFixture = fixtureAsText.split(" v ");
+                fixtures[roundNumber + roundAmount][matchNumber] = elementsOfFixture[1] + " v " + elementsOfFixture[0];
+            }
+        }
 
-        for(int i = 0; i < totalMatches; i++) { //initialise arraylist with null values
+        // Save fixtures to .csv file
+        writeFixtures(fixturesFileName);
+
+        // Initialise outcomes ArrayList with null values
+        for(int i = 0; i < totalMatches; i++) {
             outcomes.add(i, null);
         }
 
-        //if(!newFixtures) {
+        // No need to read outcomes if new fixtures have been created
+        if(!newFixtures) {
             File outcomesFile = new File(outcomesFileName);
             if(outcomesFile.exists()) {
                 Scanner list;
@@ -430,10 +434,12 @@ public class fixtureGeneration {
                     outcome.add(fileElements[0]);
                     outcome.add(fileElements[1]);
                     outcome.add(fileElements[2]);
-                    outcomes.set(Integer.parseInt(outcome.get(0)), outcome);
+                    outcomes.set(Integer.parseInt(outcome.get(0)), outcome); // Keep outcomes in order by setting outcome position to it's fixtureId
                 }
                 list.close();
-            //}
+            }
+        } else {
+            writeOutcomes(outcomesFileName);
         }
     }
 
